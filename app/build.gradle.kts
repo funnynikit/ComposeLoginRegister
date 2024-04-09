@@ -85,18 +85,9 @@ dependencies {
     kapt("com.google.dagger:hilt-android-compiler:2.48")
     implementation(libs.androidx.hilt.navigation.compose)
 
-    //implementation(libs.hilt.android)
-   // kapt(libs.androidx.hilt.compiler)
-
-
-
-    // Coil
-    implementation("io.coil-kt:coil-compose:2.5.0")
-
-    // Extended Icons
-    implementation("androidx.compose.material:material-icons-extended:1.6.3")
-
-
+    // DataStore
+    implementation("androidx.datastore:datastore-preferences:1.0.0")
+    implementation("androidx.datastore:datastore:1.0.0")
 
 }
 

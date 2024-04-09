@@ -1,5 +1,6 @@
 package com.sample.loginregistercompose.presentation
 
+import DataStoreManager
 import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.Image
@@ -16,10 +17,12 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -41,14 +44,24 @@ fun Login(navController: NavHostController,loginViewModel: LoginViewModel? = hil
 {
     val context = LocalContext.current
 
+    val scope = rememberCoroutineScope()
     val loginState = loginViewModel?.loginState?.collectAsState()
+
     when(loginState?.value)
     {
         is LoginState.Loading->{  Log.d("Check","Loading...")    }
         is LoginState.Success->{
+            val user = (loginState?.value as LoginState.Success).user
+            LaunchedEffect(Unit) {
+                scope.launch {
+                    DataStoreManager(context).saveUserName(user.username)
+                    DataStoreManager(context).saveUserEmail(user.email)
+                    DataStoreManager(context).saveUserMobile(user.mobile)
+                }
+            }
+
             navController.navigate(Screen.Home.route)
             Log.d("Check","Success...")
-
         }
         is LoginState.Error-> {
             Toast.makeText(context,"Error on Login",Toast.LENGTH_SHORT).show()
@@ -85,13 +98,17 @@ fun Login(navController: NavHostController,loginViewModel: LoginViewModel? = hil
 
             Button(onClick = {
                 loginViewModel?.loginUser(email,password)
-            }, modifier = Modifier.fillMaxWidth().padding(start = 40.dp, end = 40.dp)) {
+            }, modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 40.dp, end = 40.dp)) {
                 Text(text = "Login")
             }
 
             Spacer(modifier = Modifier.height(15.dp))
 
-            Button(onClick = { navController.navigate(Screen.SignUp.route) }, modifier = Modifier.fillMaxWidth().padding(start = 40.dp, end = 40.dp)) {
+            Button(onClick = { navController.navigate(Screen.SignUp.route) }, modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 40.dp, end = 40.dp)) {
                 Text(text = "Register")
             }
         }
